@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -7,31 +6,24 @@ services:
       POSTGRES_DB: aicodereview
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
-
   ai-engine:
     build: ./ai-engine
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-6}
-    ports:
-      - "8000:8000"
-
+    ports: ["8000:8000"]
   backend:
     build: ./backend
     depends_on:
-      postgres:
-        condition: service_healthy
-      ai-engine:
-        condition: service_started
+      postgres: {condition: service_healthy}
+      ai-engine: {condition: service_started}
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -42,15 +34,10 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       JWT_SECRET: ${JWT_SECRET:-change-this-super-secret-key-in-prod-please-32bytes+}
       CORS_ORIGINS: http://localhost:5173
-    ports:
-      - "8080:8080"
-
+    ports: ["8080:8080"]
   frontend:
     build: ./frontend
-    depends_on:
-      - backend
-    ports:
-      - "5173:80"
-
+    depends_on: [backend]
+    ports: ["5173:80"]
 volumes:
   pgdata:

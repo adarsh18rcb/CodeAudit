@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { height: 100%; }
+body { background-color: #0B0E14; color: #E5E7EB; font-family: 'Inter', sans-serif; }
+
+::selection { background: #5EEAD4; color: #0B0E14; }
+
+.scanline {
+  position: relative;
+  overflow: hidden;
+}
+.scanline::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #5EEAD4, transparent);
+  animation: scan 2.4s linear infinite;
+}
+@keyframes scan {
+  0% { transform: translateY(0); opacity: 0.9; }
+  100% { transform: translateY(220px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline::after { animation: none; display: none; }
+}
